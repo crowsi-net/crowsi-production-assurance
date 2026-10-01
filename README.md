@@ -1,0 +1,15 @@
+# crowsi-production-assurance
+
+Crowsiの実ネットワーク制御を有効化する前に、ハードウェア鍵、管理用lifeline、
+署名済みreleaseとSBOM、隔離・復旧演習、独立read-backの証跡を検証する
+fail-closedなライブラリです。
+
+このリポジトリは秘密鍵を保持せず、ネットワークやProviderを変更しません。
+実機証跡がない場合は、テスト用fixtureが成功しても本番配備済みとは判定しません。
+全証跡は同じAssurance Context digestへ署名で束縛され、Read-backは署名時刻と
+許容Freshnessの両方を満たす必要があります。別配備や古い観測の混在はBlockedです。
+評価時刻は呼出元から受け取らずライブラリ境界で取得します。所有者専用のSQLite
+watermarkを必須とし、再起動後も時刻の巻戻りや状態ファイルの置換をfail-closedで
+拒否します。状態は絶対パス、所有者一致、`0600`、非symlinkでなければ開きません。
+より強い物理的改ざん耐性が必要な配備では、TPM/HSMまたは外部rollback anchorも
+同じAssurance Contextの配備証跡に含めます。
